@@ -27,6 +27,12 @@ import com.bumptech.glide.Glide;
 import com.example.redditclone.fragment.CurateFragment;
 import com.example.redditclone.fragment.HomeFragment;
 import com.example.redditclone.fragment.PremiumFragment;
+import com.example.redditclone.fragment.CommunityFragment;
+import com.example.redditclone.fragment.DraftsFragment;
+import com.example.redditclone.fragment.HistoryFragment;
+import com.example.redditclone.fragment.VaultFragment;
+import com.example.redditclone.fragment.SavedFragment;
+import com.example.redditclone.fragment.SettingsFragment;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -41,11 +47,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Toolbar mToolbar;
 
     public static final int FRAGMENT_HOME = 0;
-    private static final int FRAGMENT_CURATE = 1;
-    private static final int FRAGMENT_PREMIUM = 2;
-    private static final int FRAGMENT_MY_PROFILE = 3;
-
-    private static final int FRAGMENT_LOG_OUT = 4;
+    private static final int FRAGMENT_MY_PROFILE = 1;
+    private static final int FRAGMENT_CURATE = 2;
+    private static final int FRAGMENT_PREMIUM = 3;
+    private static final int FRAGMENT_DRAFTS = 4;
+    private static final int FRAGMENT_COMMUNITY = 5;
+    private static final int FRAGMENT_HISTORY = 6;
+    private static final int FRAGMENT_VAULT = 7;
+    private static final int FRAGMENT_SAVED = 8;
+    private static final int FRAGMENT_SETTINGS = 9;
 
 
     private NavigationView mNavigationView;
@@ -166,6 +176,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             finish();
         } else if (id == R.id.nav_my_profile) {
             showProfileFragment();
+        } else if (id == R.id.nav_community) {
+            switchFragment(FRAGMENT_COMMUNITY, new CommunityFragment());
+        } else if (id == R.id.nav_drafts) {
+            switchFragment(FRAGMENT_DRAFTS, new DraftsFragment());
+        } else if (id == R.id.nav_history) {
+            switchFragment(FRAGMENT_HISTORY, new HistoryFragment());
+        } else if (id == R.id.nav_vault) {
+            switchFragment(FRAGMENT_VAULT, new VaultFragment());
+        } else if (id == R.id.nav_saved) {
+            switchFragment(FRAGMENT_SAVED, new SavedFragment());
+        } else if (id == R.id.nav_settings) {
+            switchFragment(FRAGMENT_SETTINGS, new SettingsFragment());
         }
 
         mDrawerLayout.closeDrawer(GravityCompat.END);
