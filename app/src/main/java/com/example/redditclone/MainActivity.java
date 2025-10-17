@@ -33,18 +33,27 @@ import com.example.redditclone.fragment.HistoryFragment;
 import com.example.redditclone.fragment.VaultFragment;
 import com.example.redditclone.fragment.SavedFragment;
 import com.example.redditclone.fragment.SettingsFragment;
+import com.example.redditclone.fragment.AnswersFragment;
+import com.example.redditclone.fragment.ChatFragment;
+import com.example.redditclone.fragment.InboxFragment;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MyProfileFragment.ProfileUpdateListener {
 
-    public static final int MY_REQUEST_CODE = 10;
+    public static final int MY_REQUEST_CODE = 20;
     private DrawerLayout mDrawerLayout;
     private ImageView imgavatar;
     private TextView tvname, tvemail;
     private Fragment mActiveFragment;
     private Toolbar mToolbar;
+    private CircleImageView navHeaderAvatar;
+    private TextView navHeaderUsername;
+    private TextView navHeaderKarma;
+    private TextView navHeaderRedditAge;
 
     public static final int FRAGMENT_HOME = 0;
     private static final int FRAGMENT_MY_PROFILE = 1;
@@ -56,6 +65,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final int FRAGMENT_VAULT = 7;
     private static final int FRAGMENT_SAVED = 8;
     private static final int FRAGMENT_SETTINGS = 9;
+    private static final int FRAGMENT_ANSWERS = 10;
+    private static final int FRAGMENT_CHAT = 11;
+    private static final int FRAGMENT_INBOX = 12;
 
 
     private NavigationView mNavigationView;
@@ -74,6 +86,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setupBottomNavigation();
 
         mDrawerLayout = findViewById(R.id.drawer_layout);
+
+        initHeaderViews();
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -109,6 +123,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    private void initHeaderViews() {
+        View headerView = mNavigationView.getHeaderView(0);
+        navHeaderAvatar = headerView.findViewById(R.id.nav_header_avatar);
+        navHeaderUsername = headerView.findViewById(R.id.nav_header_username);
+        navHeaderKarma = headerView.findViewById(R.id.nav_header_karma_value);
+        navHeaderRedditAge = headerView.findViewById(R.id.nav_header_age_value);
+    }
     private void setupBackStackListener() {
         getSupportFragmentManager().addOnBackStackChangedListener(() -> {
             Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
@@ -139,21 +160,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return;
             }
             final String strName = user.getDisplayName();
-            final String strEmail = user.getEmail();
             final Uri photoUrl = user.getPhotoUrl();
+            final String karma = "1";
+            final String redditAge = "1d";
 
             // Gửi kết quả về luồng chính để cập nhật UI
             AppExecutors.getInstance().mainThread().execute(() -> {
-                if (strName == null || strName.isEmpty()) {
-                    tvname.setText("User");
-                } else {
-                    tvname.setText("u/" + strName);
+                if (navHeaderUsername != null) {
+                    if (strName == null || strName.isEmpty()) {
+                        navHeaderUsername.setText("User");
+                    } else {
+                        navHeaderUsername.setText(strName);
+                    }
                 }
-                tvemail.setText(strEmail);
-                Glide.with(MainActivity.this)
-                        .load(photoUrl)
-                        .error(R.drawable.profile_default)
-                        .into(imgavatar);
+                if (navHeaderKarma != null) {
+                    navHeaderKarma.setText(karma);
+                }
+                if (navHeaderRedditAge != null) {
+                    navHeaderRedditAge.setText(redditAge);
+                }
+
+                if (navHeaderAvatar != null) {
+                    Glide.with(MainActivity.this)
+                            .load(photoUrl)
+                            .error(R.drawable.profile_default)
+                            .into(navHeaderAvatar);
+                }
             });
         });
     }
@@ -289,29 +321,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void setupBottomNavigation() {
-
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
 
             if (itemId == R.id.bottom_home) {
-                replaceFragment(new HomeFragment());
+                switchFragment(FRAGMENT_HOME, new HomeFragment());
+                mNavigationView.getMenu().findItem(R.id.bottom_home).setChecked(true);
                 return true;
             }
             else if (itemId == R.id.bottom_answers) {
-                replaceFragment(new HomeFragment()); // Temporary
+                switchFragment(FRAGMENT_ANSWERS, new AnswersFragment());
+                mNavigationView.getMenu().findItem(R.id.bottom_answers).setChecked(true);
                 return true;
             }
             else if (itemId == R.id.bottom_create) {
-                // SIMPLE: Just call HomeFragment's method
                 openCreatePostDialog();
                 return true;
             }
             else if (itemId == R.id.bottom_chat) {
-                replaceFragment(new HomeFragment()); // Temporary
+                switchFragment(FRAGMENT_CHAT, new ChatFragment());
+                mNavigationView.getMenu().findItem(R.id.bottom_chat).setChecked(true);
                 return true;
             }
             else if (itemId == R.id.bottom_inbox) {
-                replaceFragment(new HomeFragment()); // Temporary
+                switchFragment(FRAGMENT_INBOX, new InboxFragment());
+                mNavigationView.getMenu().findItem(R.id.bottom_inbox).setChecked(true);
                 return true;
             }
 
@@ -333,6 +367,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Toast.makeText(this, "Switched to Home - tap create again to post", Toast.LENGTH_SHORT).show();
         }
     }
-
 
 }

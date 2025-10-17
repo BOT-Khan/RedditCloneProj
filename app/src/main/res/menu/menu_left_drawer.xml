@@ -9,7 +9,7 @@
             android:title="Explore Communities"
             tools:ignore="HardcodedText"/>
         <item
-            android:id="@+id/nav_left_community"
+            android:id="@+id/nav_community"
             android:icon="@drawable/ic_add"
             android:title="Start a Community"
             tools:ignore="HardcodedText"/>
